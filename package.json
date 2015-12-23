@@ -1,0 +1,30 @@
+{
+  "name": "job-log-to-elasticsearch",
+  "version": "1.0.0",
+  "description": "Take jobs from the job log, and put them in elasticsearch",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octoblu/job-log-to-elasticsearch.git"
+  },
+  "keywords": [
+    "redis",
+    "elasticsearch",
+    "meshblu"
+  ],
+  "author": "Octoblu, <serveradmin@octoblu.com> (https://octoblu.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octoblu/job-log-to-elasticsearch/issues"
+  },
+  "homepage": "https://github.com/octoblu/job-log-to-elasticsearch#readme",
+  "dependencies": {
+    "@octoblu/redis-ns": "^0.1.2",
+    "coffee-script": "^1.10.0",
+    "elasticsearch": "^10.0.1",
+    "redis": "^2.4.2"
+  }
+}
