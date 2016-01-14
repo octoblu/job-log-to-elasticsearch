@@ -6,6 +6,7 @@ Logger  = require '../src/logger'
 describe 'Logger', ->
   beforeEach ->
     @clientId = uuid.v1()
+    @rand = => 0
 
     @client = new RedisNS 'ns', redis.createClient(@clientId)
     client  = new RedisNS 'ns', redis.createClient(@clientId)
@@ -14,7 +15,8 @@ describe 'Logger', ->
 
     timeout = 1
     interval = 1
-    @sut = new Logger {client, @elasticsearch, interval, timeout}
+    samplePercentage = 100
+    @sut = new Logger {client, @elasticsearch, interval, timeout, samplePercentage, @rand}
 
   describe '-> run', ->
     describe 'When there is no job in the queue', ->

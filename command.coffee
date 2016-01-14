@@ -19,6 +19,7 @@ class Command
       .option '-i, --interval <interval>', 'How often to log to elasticsearch (env J2E_INTERVAL)'
       .option '-n, --namespace <meshblu>', 'Redis namespace to use (env J2E_NAMESPACE)'
       .option '-r, --redis-uri <redis://localhost:6379>', 'Redis URI. (env J2E_REDIS_URI)'
+      .option '-s, --sample-percentage <100>', 'Record sample percentage. (env J2E_SAMPLE_PERCENTAGE)'
       .option '-t, --timeout <15>', 'Redis BRPOP timeout. (env J2E_TIMEOUT)'
       .parse process.argv
 
@@ -27,6 +28,8 @@ class Command
     @interval = parseInt(commander.interval ? process.env.J2E_INTERVAL || '1')
     @timeout = parseInt(commander.timeout ? process.env.J2E_TIMEOUT || '15')
     @redisUri = commander.redisUri ? process.env.J2E_REDIS_URI || 'redis://localhost:6379'
+    @samplePercentage = parseInt(commander.samplePercentage ? process.env.J2E_SAMPLE_PERCENTAGE || 100)
+    @rand = Math.random()
 
   run: =>
     @parseOptions()
@@ -43,7 +46,7 @@ class Command
   singleRun: (callback) =>
     return process.exit 0 if @shouldExit
 
-    logger = new Logger {@client, @elasticsearch, @interval, @timeout}
+    logger = new Logger {@client, @elasticsearch, @interval, @samplePercentage, @timeout}
     logger.run callback
 
 command = new Command
