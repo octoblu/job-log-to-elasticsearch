@@ -1,9 +1,12 @@
+_     = require 'lodash'
 async = require 'async'
+debug = require('debug')('job-log-to-elasticsearch:logger')
 
 class Logger
   constructor: ({@client, @elasticsearch, @interval, @timeout}) ->
 
   run: (callback) =>
+    debug 'run'
     endTime = Date.now() + (@interval * 1000)
     endTimeExceeded = -> endTime < Date.now()
 
@@ -11,6 +14,8 @@ class Logger
 
     async.until endTimeExceeded, @popLog, (error) =>
       return callback error if error?
+      debug 'endTimeExceeded', numberOfBulkRecords: _.size(@bulkRecords)
+      return callback() if _.isEmpty @bulkRecords
 
       @elasticsearch.bulk body: @bulkRecords, callback
 
