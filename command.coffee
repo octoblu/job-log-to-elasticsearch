@@ -29,7 +29,7 @@ class Command
     @timeout = parseInt(commander.timeout ? process.env.J2E_TIMEOUT || '15')
     @redisUri = commander.redisUri ? process.env.J2E_REDIS_URI || 'redis://localhost:6379'
     @samplePercentage = parseInt(commander.samplePercentage ? process.env.J2E_SAMPLE_PERCENTAGE || 100)
-    @rand = Math.random()
+    @rand = Math.random
 
   run: =>
     @parseOptions()
