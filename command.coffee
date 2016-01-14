@@ -46,7 +46,7 @@ class Command
   singleRun: (callback) =>
     return process.exit 0 if @shouldExit
 
-    logger = new Logger {@client, @elasticsearch, @interval, @samplePercentage, @timeout}
+    logger = new Logger {@client, @elasticsearch, @interval, @samplePercentage, @timeout, @rand}
     logger.run callback
 
 command = new Command
