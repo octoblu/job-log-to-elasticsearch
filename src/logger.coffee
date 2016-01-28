@@ -49,6 +49,6 @@ class Logger
     return sampleRate
 
   rollTheDice: (sampleRate) =>
-    return @rand() <= (sampleRate * 100)
+    return @rand() <= sampleRate
 
 module.exports = Logger
