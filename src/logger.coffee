@@ -3,7 +3,7 @@ async = require 'async'
 debug = require('debug')('job-log-to-elasticsearch:logger')
 
 class Logger
-  constructor: ({@client, @elasticsearch, @interval, @timeout, @samplePercentage, @rand}) ->
+  constructor: ({@client, @elasticsearch, @interval, @timeout, @rand}) ->
 
   run: (callback) =>
     debug 'run'
@@ -20,19 +20,35 @@ class Logger
       @elasticsearch.bulk body: @bulkRecords, callback
 
   popLog: (callback) =>
-    @client.brpop 'job-log', @timeout, (error, result) =>
+    @client.keys 'sample-rate:*', (error, keys) =>
       return callback error if error?
-      return callback() unless result?
-      return callback() unless @rollTheDice()
+      return callback() if _.isEmpty keys
 
-      [channel,jobStr] = result
-      job = JSON.parse jobStr
+      @client.brpop keys..., @timeout, (error, result) =>
+        return callback error if error?
+        return callback() unless result?
 
-      @bulkRecords.push create: {_index: job.index, _type: job.type}
-      @bulkRecords.push job.body
-      callback()
+        [channel,jobStr] = result
 
-  rollTheDice: =>
-    @rand() <= (@samplePercentage / 100)
+        try
+          sampleRate = @parseSampleRate channel
+        catch error
+          return callback error
+
+        return callback() unless @rollTheDice(sampleRate)
+        job = JSON.parse jobStr
+
+        @bulkRecords.push create: {_index: job.index, _type: job.type}
+        @bulkRecords.push job.body
+        callback()
+
+  parseSampleRate: (channel) =>
+    sampleRate = parseFloat(_.last(_.split(channel, ':')))
+    if _.isNaN sampleRate
+      throw new Error "Invalid queueName: #{channel}"
+    return sampleRate
+
+  rollTheDice: (sampleRate) =>
+    return @rand() <= (sampleRate * 100)
 
 module.exports = Logger
