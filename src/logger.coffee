@@ -17,7 +17,10 @@ class Logger
       debug 'endTimeExceeded', numberOfBulkRecords: _.size(@bulkRecords)
       return callback() if _.isEmpty @bulkRecords
 
-      @elasticsearch.bulk body: @bulkRecords, callback
+      @elasticsearch.bulk body: @bulkRecords, (error, body) =>
+        return callback error if error?
+        return callback new Error JSON.stringify body if body?.errors
+        callback()
 
   popLog: (callback) =>
     @client.keys 'sample-rate:*', (error, keys) =>
