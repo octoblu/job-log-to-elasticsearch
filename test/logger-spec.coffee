@@ -7,8 +7,8 @@ describe 'Logger', ->
     @clientId = uuid.v1()
     @rand = => 0.50
 
-    @client = redis.createClient(@clientId)
-    client  = redis.createClient(@clientId)
+    @client = redis.createClient(@clientId, dropBufferSupport: true)
+    client  = redis.createClient(@clientId, dropBufferSupport: true)
 
     @elasticsearch = bulk: sinon.stub().yields()
 

@@ -3,7 +3,7 @@
 async         = require 'async'
 commander     = require 'commander'
 elasticsearch = require 'elasticsearch'
-redis         = require 'redis'
+redis         = require 'ioredis'
 packageJSON   = require './package.json'
 Logger        = require './src/logger'
 
@@ -28,7 +28,7 @@ class Command
 
   run: =>
     @parseOptions()
-    @client = redis.createClient(@redisUri)
+    @client = redis.createClient(@redisUri, dropBufferSupport: true)
     @elasticsearch = elasticsearch.Client host: @elasticsearchUri
 
     process.on 'SIGTERM', =>
@@ -42,7 +42,9 @@ class Command
     return process.exit 0 if @shouldExit
 
     logger = new Logger {@client, @elasticsearch, @interval, @timeout, @rand}
-    logger.run callback
+    logger.run (error) =>
+      return callback error if error?
+      process.nextTick callback
 
 command = new Command
 command.run()
