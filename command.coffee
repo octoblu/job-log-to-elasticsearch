@@ -28,15 +28,21 @@ class Command
 
   run: =>
     @parseOptions()
-    @client = redis.createClient(@redisUri, dropBufferSupport: true)
     @elasticsearch = elasticsearch.Client host: @elasticsearchUri
+
+    @client = redis.createClient @redisUri, dropBufferSupport: true
+
+    @client.on 'ready', =>
+      async.forever @singleRun, (error) =>
+        console.error error.stack
+        process.exit 1
+
+    @client.on 'error', (error) =>
+      console.error error.stack
+      process.exit 1
 
     process.on 'SIGTERM', =>
       @shouldExit = true
-
-    async.forever @singleRun, (error) =>
-      console.error error.stack
-      process.exit 1
 
   singleRun: (callback) =>
     return process.exit 0 if @shouldExit
