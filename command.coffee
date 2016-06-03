@@ -26,6 +26,10 @@ class Command
     @redisUri = commander.redisUri ? process.env.J2E_REDIS_URI || 'redis://localhost:6379'
     @rand = Math.random
 
+  panic: (error) =>
+    console.error 'PANIC:', error.stack()
+    process.exit 1
+
   run: =>
     @parseOptions()
     @elasticsearch = elasticsearch.Client host: @elasticsearchUri
@@ -33,12 +37,10 @@ class Command
     @client = redis.createClient @redisUri, dropBufferSupport: true
 
     @client.once 'ready', =>
-      async.doUntil @singleRun, @_checkShouldExit, (error) =>
-        if error?
-          console.error error.stack
-          process.exit 1
-          return
+      @client.on 'error', @panic
 
+      async.doUntil @singleRun, @_checkShouldExit, (error) =>
+        return @panic error if error?
         process.exit 0
 
     @client.once 'error', (error) =>
