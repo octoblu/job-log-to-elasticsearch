@@ -32,25 +32,31 @@ class Command
 
     @client = redis.createClient @redisUri, dropBufferSupport: true
 
-    @client.on 'ready', =>
-      async.forever @singleRun, (error) =>
-        console.error error.stack
-        process.exit 1
+    @client.once 'ready', =>
+      async.doUntil @singleRun, @_checkShouldExit, (error) =>
+        if error?
+          console.error error.stack
+          process.exit 1
+          return
 
-    @client.on 'error', (error) =>
+        process.exit 0
+
+    @client.once 'error', (error) =>
       console.error error.stack
       process.exit 1
 
     process.on 'SIGTERM', =>
       @shouldExit = true
 
-  singleRun: (callback) =>
-    return process.exit 0 if @shouldExit
+  _checkShouldExit: =>
+    @shouldExit ? false
 
+  singleRun: (callback) =>
     logger = new Logger {@client, @elasticsearch, @interval, @timeout, @rand}
-    logger.run (error) =>
-      return callback error if error?
-      process.nextTick callback
+    process.nextTick =>
+      logger.run (error) =>
+        return callback error if error?
+        process.nextTick callback
 
 command = new Command
 command.run()
