@@ -27,7 +27,7 @@ class Command
     @rand = Math.random
 
   panic: (error) =>
-    console.error 'PANIC:', error.stack()
+    console.error 'PANIC:', error.stack
     process.exit 1
 
   run: =>

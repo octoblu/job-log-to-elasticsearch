@@ -1,6 +1,6 @@
 {
   "name": "job-log-to-elasticsearch",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "Take jobs from the job log, and put them in elasticsearch",
   "main": "index.js",
   "scripts": {
