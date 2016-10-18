@@ -1,18 +1,27 @@
 language: node_js
 node_js:
-- '5'
+  - '5'
 addons:
   code_climate:
-    repo_token: "536d7b181edac4298b29a6f0c7a4fd66f92748552cbb6cba2913598f236bb821"
+    repo_token: 536d7b181edac4298b29a6f0c7a4fd66f92748552cbb6cba2913598f236bb821
 before_script:
-- npm install -g codeclimate-test-reporter
+  - npm install -g codeclimate-test-reporter
 after_script:
-- codeclimate-test-reporter < coverage/lcov.info
+  - codeclimate-test-reporter < coverage/lcov.info
 deploy:
   provider: npm
   email: serveradmin@octoblu.com
   api_key:
-    secure: XrmbVeKHTwFntaxJDZkPp3NY88uVBMPcFPDAmIuIa7MFuhnEEDeZeHMGhQrpgkQw2gjq+wbVX5IV33nBXJhm6Z8CmP39seRSxlOkaQcijtgztY7Mi5hvyGwWJexoTZOcjo/f0BIS6bJlWuQQVaIQwSJSSIeZYZ4eYWkZDqSIfJDJ+YHi7EKYnWv9DnWzCcEXgzs6p6YgUGEJCmopXEO6nVxZzBntnaVhOrtmo786dV5ScU0uC9RtpPAGxip51RukCnZBOLAq5UPRjkAOxvw1KYIgCbUNUiHGL5qREo717trq9PmbCjGWsFnlbGj9xNJeneafoois01fOvj+jZdmi7x/WqH6+x+if8CnUfLR9jFV5sL9yQJb3GKH1vdnbqCswehTTQRyPxyIsZKbZ3i449TzjLFRCiaErzEZUQif7U5N62GT4jvpelSPsyiFn/3/mijGic8+5rKF0eEZnqPYLCGslUkwgHYq1eT0mXgZ8o/8vF8nK2JVN5LpppCXITL9LY/ThXrlkobSu0FQF9XzcCdhzoBoCNxUOXQg7/6OekxcgN27WDITWNrbMPPrGH+rMLz0ezwyoTmqI52+21iqXeiws7rrJGfNp/tPMUgnM3O7gYHvY8EqiSEPSZ3EsXvUpVrYX3S0st55FUN8nYRp2XgWlg51pUN2rPVYSah9+sNM=
-  on:
+    secure: >-
+      XrmbVeKHTwFntaxJDZkPp3NY88uVBMPcFPDAmIuIa7MFuhnEEDeZeHMGhQrpgkQw2gjq+wbVX5IV33nBXJhm6Z8CmP39seRSxlOkaQcijtgztY7Mi5hvyGwWJexoTZOcjo/f0BIS6bJlWuQQVaIQwSJSSIeZYZ4eYWkZDqSIfJDJ+YHi7EKYnWv9DnWzCcEXgzs6p6YgUGEJCmopXEO6nVxZzBntnaVhOrtmo786dV5ScU0uC9RtpPAGxip51RukCnZBOLAq5UPRjkAOxvw1KYIgCbUNUiHGL5qREo717trq9PmbCjGWsFnlbGj9xNJeneafoois01fOvj+jZdmi7x/WqH6+x+if8CnUfLR9jFV5sL9yQJb3GKH1vdnbqCswehTTQRyPxyIsZKbZ3i449TzjLFRCiaErzEZUQif7U5N62GT4jvpelSPsyiFn/3/mijGic8+5rKF0eEZnqPYLCGslUkwgHYq1eT0mXgZ8o/8vF8nK2JVN5LpppCXITL9LY/ThXrlkobSu0FQF9XzcCdhzoBoCNxUOXQg7/6OekxcgN27WDITWNrbMPPrGH+rMLz0ezwyoTmqI52+21iqXeiws7rrJGfNp/tPMUgnM3O7gYHvY8EqiSEPSZ3EsXvUpVrYX3S0st55FUN8nYRp2XgWlg51pUN2rPVYSah9+sNM=
+  'on':
     tags: true
     branches: true
+notifications:
+  webhooks:
+    - 'https://beekeeper.octoblu.com/webhooks/travis:ci'
+after_success:
+  - npm run coverage
+  - 'npm run mocha:json'
+  - 'bash <(curl -s https://codecov.io/bash)'
+  - 'bash <(curl -s https://codecov.octoblu.com/bash)'
