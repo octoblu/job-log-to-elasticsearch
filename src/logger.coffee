@@ -41,7 +41,7 @@ class Logger
         return callback() unless @rollTheDice(sampleRate)
         job = JSON.parse jobStr
 
-        @bulkRecords.push create: {_index: job.index, _type: job.type}
+        @bulkRecords.push index: {_index: job.index, _type: job.type}
         @bulkRecords.push job.body
         callback()
 

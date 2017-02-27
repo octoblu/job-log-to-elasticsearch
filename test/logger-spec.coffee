@@ -33,7 +33,7 @@ describe 'Logger', ->
       it 'should create an elasticsearch record', ->
         expect(@elasticsearch.bulk).to.have.been.calledWith
           body: [
-            {create: {_index: 'meshblu_job', _type: 'dispatcher'}}
+            {index: {_index: 'meshblu_job', _type: 'dispatcher'}}
             {elapsedTime: 1}
           ]
 
@@ -52,9 +52,9 @@ describe 'Logger', ->
       it 'should create both elasticsearch records', ->
         expect(@elasticsearch.bulk).to.have.been.calledWith
           body: [
-            {create: {_index: 'meshblu_job', _type: 'dispatcher'}}
+            {index: {_index: 'meshblu_job', _type: 'dispatcher'}}
             {elapsedTime: 1}
-            {create: {_index: 'meshblu_job', _type: 'dispatcher'}}
+            {index: {_index: 'meshblu_job', _type: 'dispatcher'}}
             {elapsedTime: 5}
           ]
 
@@ -73,7 +73,7 @@ describe 'Logger', ->
       it 'should create one elasticsearch record', ->
         expect(@elasticsearch.bulk).to.have.been.calledWith
           body: [
-            {create: {_index: 'meshblu_job', _type: 'dispatcher'}}
+            {index: {_index: 'meshblu_job', _type: 'dispatcher'}}
             {elapsedTime: 1}
           ]
 
