@@ -1,9 +1,8 @@
-### !pragma coverage-skip-block ###
-
 async         = require 'async'
 commander     = require 'commander'
 elasticsearch = require 'elasticsearch'
 redis         = require 'ioredis'
+SigtermHandler = require 'sigterm-handler'
 packageJSON   = require './package.json'
 Logger        = require './src/logger'
 
@@ -36,7 +35,8 @@ class Command
 
     @client = redis.createClient @redisUri, dropBufferSupport: true
 
-    @client.once 'ready', =>
+    @client.ping (error) =>
+      return @die error if error?
       @client.on 'error', @panic
 
       async.doUntil @singleRun, @_checkShouldExit, (error) =>
@@ -47,11 +47,13 @@ class Command
       console.error error.stack
       process.exit 1
 
-    process.on 'SIGTERM', =>
+    sigtermHandler = new SigtermHandler({ events: ['SIGTERM', 'SIGINT'] })
+    sigtermHandler.register (callback) =>
       @shouldExit = true
+      callback()
 
   _checkShouldExit: =>
-    @shouldExit ? false
+    return @shouldExit == true
 
   singleRun: (callback) =>
     logger = new Logger {@client, @elasticsearch, @interval, @timeout, @rand}
